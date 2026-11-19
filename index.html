@@ -4,408 +4,577 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Мой Личный Кабинет</title>
-<link rel="preconnect" href="https://googleapis.com">
-<link rel="preconnect" href="https://gstatic.com" crossorigin>
-<link href="https://googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://googleapis.com" rel="stylesheet">
 <style>
   :root {
-    --bg: #E3E7DE;
-    --card: #FFFFFF;
-    --btn-dark: #1F3A12;
-    --btn-dark-hover: #2c521a;
-    --lilac: #C98FD3;
-    --lilac-soft: rgba(201, 143, 211, 0.22);
-    --lime: #B6D98C;
-    --lime-soft: rgba(182, 217, 140, 0.35);
-    --text: #162410;
-    --muted: #5C6B55;
-    --border: #D4DDD0;
-    --radius-card: 28px;
-    --radius-sm: 16px;
-    --shadow: 0 10px 30px rgba(31, 58, 18, 0.06);
+    --bg: #E3E7DE; --card: #FFFFFF; --dark: #1F3A12; --lilac: #C98FD3; --lime: #B6D98C;
+    --text: #162410; --muted: #5C6B55; --border: #D4DDD0; --r: 28px; --rs: 16px;
   }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 90px;
-  }
-
-  /* ВЕРХНЕЕ МЕНЮ (ДЕСКТОП) */
-  header.top-nav {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: rgba(227, 231, 222, 0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(31, 58, 18, 0.08);
-    padding: 12px 24px;
-  }
-
-  .nav-inner {
-    max-width: 1240px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .brand {
-    font-weight: 800;
-    font-size: 18px;
-    letter-spacing: -0.03em;
-    color: var(--btn-dark);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding: 4px 0;
-  }
-  .nav-links::-webkit-scrollbar { display: none; }
-
-  .nav-btn {
-    border: none;
-    background: transparent;
-    color: var(--text);
-    font-weight: 600;
-    font-size: 13px;
-    padding: 9px 14px;
-    border-radius: 99px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: 0.2s;
-  }
-  .nav-btn:hover { background: rgba(255,255,255,0.65); }
-  .nav-btn.active {
-    background: var(--btn-dark);
-    color: #fff;
-  }
-
-  .backup-actions {
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  /* ОСНОВНОЙ КОНТЕЙНЕР */
-  main {
-    max-width: 1240px;
-    margin: 24px auto;
-    padding: 0 20px;
-  }
-
-  .section { display: none; animation: fadeIn 0.25s ease; }
-  .section.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* БОЛЬШАЯ ШАПКА РАЗДЕЛА С ГРАДИЕНТОМ */
-  .hero-header {
-    background: linear-gradient(125deg, var(--lime) 0%, #d8e5c8 48%, var(--lilac) 100%);
-    border-radius: var(--radius-card);
-    padding: 32px 36px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-
-  .hero-title-block h1 {
-    font-size: clamp(28px, 4vw, 40px);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    color: var(--btn-dark);
-    margin-bottom: 8px;
-  }
-
-  .hero-title-block p {
-    font-size: 15px;
-    font-weight: 500;
-    color: #293d1f;
-    max-width: 600px;
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .stat-pill {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    padding: 12px 18px;
-    border-radius: 20px;
-    min-width: 120px;
-  }
-  .stat-pill .num {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--btn-dark);
-    line-height: 1.1;
-  }
-  .stat-pill .lbl {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-
-  /* СЕТКИ И КАРТОЧКИ */
-  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 22px; margin-bottom: 22px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; margin-bottom: 22px; }
-
-  .card {
-    background: var(--card);
-    border-radius: var(--radius-card);
-    padding: 26px;
-    box-shadow: var(--shadow);
-  }
-
-  .card h2, .card h3 {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  /* ФОРМЫ И КНОПКИ */
-  input, select, textarea {
-    width: 100%;
-    padding: 11px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 500;
-    background: #FAFBF9;
-    color: var(--text);
-    outline: none;
-    transition: 0.2s;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--btn-dark);
-    background: #fff;
-  }
-
-  .row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
-
-  .btn {
-    background: var(--btn-dark);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 11px 18px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
-  }
-  .btn:hover { background: var(--btn-dark-hover); transform: translateY(-1px); }
-
-  .btn-lilac { background: var(--lilac); color: var(--text); }
-  .btn-lilac:hover { opacity: 0.9; }
-
-  .btn-lime { background: var(--lime); color: var(--text); }
-  .btn-lime:hover { opacity: 0.9; }
-
-  .btn-outline {
-    background: transparent;
-    border: 1.5px solid var(--border);
-    color: var(--text);
-  }
-  .btn-outline:hover { background: var(--bg); }
-
-  .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 12px; }
-  .btn-icon { padding: 6px 9px; font-size: 12px; border-radius: 10px; }
-
-  /* ШКАЛА 1-5 */
-  .scale { display: flex; gap: 8px; margin-top: 6px; }
-  .scale button {
-    width: 38px; height: 38px;
-    border-radius: 12px;
-    border: 1.5px solid var(--border);
-    background: #FAFBF9;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.15s;
-  }
-  .scale button.selected {
-    background: var(--btn-dark);
-    color: #fff;
-    border-color: var(--btn-dark);
-  }
-
-  /* ЭЛЕМЕНТЫ СПИСКОВ */
-  .item-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 11px 14px;
-    background: #F7F9F5;
-    border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-    transition: 0.15s;
-  }
-  .item-row.done .item-text {
-    text-decoration: line-through;
-    color: var(--muted);
-  }
-  .item-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    min-width: 0;
-  }
-  .item-left input[type="checkbox"] {
-    width: 19px; height: 19px;
-    accent-color: var(--btn-dark);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .item-text {
-    font-size: 14px;
-    font-weight: 500;
-    word-break: break-word;
-  }
-  .item-actions {
-    display: flex;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-
-  .tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 700;
-    background: var(--lime-soft);
-    color: var(--btn-dark);
-  }
-  .tag-lilac { background: var(--lilac-soft); color: #4a1d54; }
-
-  /* ТАЙМЕР */
-  .timer-num {
-    font-size: 48px;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    text-align: center;
-    color: var(--btn-dark);
-    margin: 10px 0;
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* ПРИВЫЧКИ МЕСЯЦ */
-  .table-wrap { overflow-x: auto; padding-bottom: 6px; }
-  table.habit-table { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 12px; }
-  table.habit-table th { color: var(--muted); font-weight: 700; padding: 6px 4px; }
-  table.habit-table td.name-col {
-    font-weight: 700; white-space: nowrap; padding-right: 12px; text-align: left;
-  }
-  table.habit-table td.day-cell {
-    width: 26px; height: 26px; min-width: 26px;
-    border-radius: 8px;
-    background: #F1F4EE;
-    text-align: center;
-    cursor: pointer;
-    font-weight: 800;
-    color: transparent;
-    transition: 0.15s;
-  }
-  table.habit-table td.day-cell.active {
-    background: var(--btn-dark);
-    color: var(--lime);
-  }
-
-  /* АНГЛИЙСКИЙ */
-  .word-new {
-    background: var(--lilac-soft);
-    border-bottom: 2px solid var(--lilac);
-    padding: 1px 5px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-  }
-  .flashcard {
-    background: linear-gradient(135deg, var(--lime-soft), var(--lilac-soft));
-    border-radius: 22px;
-    padding: 32px 20px;
-    text-align: center;
-    cursor: pointer;
-    min-height: 170px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 14px;
-    user-select: none;
-  }
-  .chip {
-    display: inline-block;
-    padding: 7px 13px;
-    background: #fff;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    margin: 4px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  /* МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ */
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Manrope', sans-serif; }
+  body { background: var(--bg); color: var(--text); padding-bottom: 85px; }
+  header { position: sticky; top: 0; z-index: 99; background: rgba(227,231,222,0.92); backdrop-filter: blur(10px); padding: 12px 20px; border-bottom: 1px solid rgba(31,58,18,0.08); }
+  .nav-wrap { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .brand { font-weight: 800; font-size: 18px; color: var(--dark); white-space: nowrap; }
+  nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  nav::-webkit-scrollbar { display: none; }
+  .nb { border: none; background: transparent; padding: 8px 13px; border-radius: 99px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; color: var(--text); }
+  .nb.active { background: var(--dark); color: #fff; }
+  main { max-width: 1200px; margin: 22px auto; padding: 0 18px; }
+  .sec { display: none; }
+  .sec.active { display: block; }
+  .hero { background: linear-gradient(125deg, var(--lime) 0%, #dce6cf 50%, var(--lilac) 100%); border-radius: var(--r); padding: 28px 32px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; box-shadow: 0 10px 30px rgba(31,58,18,0.06); }
+  .hero h1 { font-size: clamp(26px, 4vw, 38px); font-weight: 800; letter-spacing: -0.03em; color: var(--dark); }
+  .hero p { font-size: 14px; color: #2a3e20; margin-top: 4px; }
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pill { background: rgba(255,255,255,0.85); padding: 10px 16px; border-radius: 18px; min-width: 110px; }
+  .pill b { font-size: 22px; font-weight: 800; color: var(--dark); display: block; }
+  .pill span { font-size: 11px; font-weight: 700; color: var(--muted); }
+  .g2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 20px; }
+  .g3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 20px; }
+  .card { background: var(--card); border-radius: var(--r); padding: 24px; box-shadow: 0 10px 30px rgba(31,58,18,0.06); }
+  .card h3 { font-size: 19px; font-weight: 800; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+  input, select, textarea { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: var(--rs); font-size: 14px; background: #FAFBF9; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--dark); background: #fff; }
+  .row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+  .btn { background: var(--dark); color: #fff; border: none; border-radius: var(--rs); padding: 10px 16px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .btn-l { background: var(--lilac); color: var(--text); }
+  .btn-g { background: var(--lime); color: var(--text); }
+  .btn-o { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+  .btn-s { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
+  .scale { display: flex; gap: 6px; margin: 6px 0 12px; }
+  .scale button { width: 36px; height: 36px; border-radius: 11px; border: 1.5px solid var(--border); background: #FAFBF9; font-weight: 800; cursor: pointer; }
+  .scale button.sel { background: var(--dark); color: #fff; border-color: var(--dark); }
+  .item { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #F7F9F5; border-radius: var(--rs); margin-bottom: 8px; font-size: 14px; }
+  .item.done span { text-decoration: line-through; color: var(--muted); }
+  .item-l { display: flex; align-items: center; gap: 9px; flex: 1; }
+  .item-l input { width: 18px; height: 18px; accent-color: var(--dark); flex-shrink: 0; }
+  .tag { padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 800; background: rgba(182,217,140,0.4); color: var(--dark); }
+  .tag-l { background: rgba(201,143,211,0.3); }
+  .t-num { font-size: 44px; font-weight: 800; text-align: center; color: var(--dark); margin: 8px 0; }
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: 12px; }
+  td.dc { width: 25px; height: 25px; min-width: 25px; border-radius: 7px; background: #F1F4EE; text-align: center; cursor: pointer; font-weight: 800; color: transparent; }
+  td.dc.on { background: var(--dark); color: var(--lime); }
+  .w-new { background: rgba(201,143,211,0.35); border-bottom: 2px solid var(--lilac); padding: 1px 4px; border-radius: 5px; cursor: pointer; font-weight: 700; }
+  .fc { background: linear-gradient(135deg, rgba(182,217,140,0.35), rgba(201,143,211,0.3)); border-radius: 20px; padding: 28px 16px; text-align: center; cursor: pointer; margin-bottom: 12px; }
+  .chip { display: inline-block; padding: 6px 12px; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; margin: 3px; font-weight: 700; cursor: pointer; }
   @media (max-width: 820px) {
-    header.top-nav {
-      position: fixed;
-      top: auto;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      border-bottom: none;
-      border-top: 1px solid rgba(31, 58, 18, 0.12);
-      padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.96);
-    }
+    header { position: fixed; top: auto; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.96); padding: 8px; }
     .brand { display: none; }
-    .nav-links { width: 100%; justify-content: flex-start; }
-    .hero-header { padding: 24px 20px; }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    main { margin-top: 14px; padding: 0 14px; }
+    .g2, .g3 { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<header class="top-nav">
-  <div class="nav-inner">
+<header>
+  <div class="nav-wrap">
     <div class="brand">🌿 Мой Кабинет</div>
-    <nav class="nav-links" id="navLinks">
-      <button class="nav-btn active" onclick="switchTab('home', this)">🏠 Главная</button>
-      <button class="nav-btn" onclick="switchTab('week', this)">📅 Неделя</button>
+    <nav>
+      <button class="nb active" onclick="tab('home',this)">🏠 Главная</button>
+      <button class="nb" onclick="tab('week',this)">📅 Неделя</button>
+      <button class="nb" onclick="tab('habits',this)">✅ Привычки</button>
+      <button class="nb" onclick="tab('eng',this)">🇬🇧 Английский</button>
+      <button class="nb" onclick="tab('blog',this)">📱 Блог</button>
+      <button class="nb" onclick="tab('health',this)">🌸 Здоровье</button>
+      <button class="nb" onclick="tab('books',this)">📚 Книги</button>
+      <button class="nb" onclick="tab('ideas',this)">💡 Идеи</button>
+      <button class="nb" onclick="tab('growth',this)">🚀 Развитие</button>
+      <button class="nb" onclick="tab('travel',this)">✈️ Поездки</button>
+    </nav>
+    <div class="row" style="margin:0;">
+      <button class="btn btn-o btn-s" onclick="expData()">💾</button>
+      <button class="btn btn-o btn-s" onclick="document.getElementById('imp').click()">📂</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="impData(event)">
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ГЛАВНАЯ -->
+  <section id="home" class="sec active">
+    <div class="hero">
+      <div><h1 id="greet">Добрый день!</h1><p id="subDate">Технический писатель • Администратор • Мама</p></div>
+      <div class="stats">
+        <div class="pill"><b id="stTasks">0/0</b><span>Задачи дня</span></div>
+        <div class="pill"><b id="stFocus">0 мин</b><span>Фокус недели</span></div>
+        <div class="pill"><b id="stHab">0/3</b><span>Привычки</span></div>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="card">
+        <h3>🌅 Старт дня</h3>
+        <small>Энергия:</small><div class="scale" id="scEnergy"></div>
+        <small>Настроение:</small><div class="scale" id="scMood"></div>
+        <small>🎯 Одно главное дело:</small>
+        <input id="inMainGoal" style="margin-top:6px" oninput="saveHome()">
+      </div>
+      <div class="card">
+        <h3>⏱ Таймер фокуса</h3>
+        <select id="selCat" style="margin-bottom:8px">
+          <option>✍️ Техническая документация</option>
+          <option>🗂 Администрирование</option>
+          <option>🇬🇧 Английский (20 мин)</option>
+          <option>📱 Блог</option>
+          <option>📚 Чтение</option>
+        </select>
+        <div class="row" style="justify-content:center">
+          <button class="btn btn-o btn-s" onclick="setT(20)">20 мин</button>
+          <button class="btn btn-o btn-s" onclick="setT(30)">30 мин</button>
+          <button class="btn btn-o btn-s" onclick="setT(45)">45 мин</button>
+        </div>
+        <div class="t-num" id="tDisp">20:00</div>
+        <div class="row" style="justify-content:center;margin:0">
+          <button class="btn" id="tBtn" onclick="togT()">Старт</button>
+          <button class="btn btn-o" onclick="setT(tBase)">Сброс</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🇬🇧 Слово дня</h3>
+        <div id="wodBox" style="text-align:center;padding:12px 0"></div>
+        <div class="row" style="justify-content:center;margin:0">
+          <button class="btn btn-l btn-s" onclick="speak(D.dict[wodIdx%D.dict.length].w)">🔊 Озвучить</button>
+          <button class="btn btn-o btn-s" onclick="wodIdx++;drawWod()">🔄 Другое</button>
+        </div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <h3>📋 План на сегодня</h3>
+        <div class="row">
+          <select id="tPer" style="width:115px"><option value="m">🌅 Утро</option><option value="d">☀️ День</option><option value="e">🌙 Вечер</option></select>
+          <input id="tTxt" placeholder="Задача..." onkeypress="if(event.key==='Enter')addToday()">
+          <button class="btn" onclick="addToday()">+</button>
+        </div>
+        <div id="todayList"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card"><h3>🔥 Привычки и серия</h3><div id="homeHab"></div></div>
+        <div class="card">
+          <h3>🌙 Итог дня</h3>
+          <small>Что получилось хорошо?</small><textarea id="inWin" rows="2" style="margin:5px 0 10px" oninput="saveHome()"></textarea>
+          <small>Что перенести на завтра?</small><textarea id="inMove" rows="2" style="margin-top:5px" oninput="saveHome()"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- НЕДЕЛЯ -->
+  <section id="week" class="sec">
+    <div class="hero"><div><h1>План недели</h1><p>Цели недели и распределение задач по дням</p></div><div class="stats"><div class="pill"><b id="stWG">0/0</b><span>Цели</span></div></div></div>
+    <div class="card" style="margin-bottom:20px">
+      <h3>🎯 Цели недели</h3>
+      <div class="row"><input id="wgIn" placeholder="Новая цель..."><button class="btn" onclick="addWG()">+</button></div>
+      <div id="wgList"></div>
+    </div>
+    <div class="card">
+      <h3>🗓 Задачи по дням</h3>
+      <div class="row">
+        <select id="wdSel" style="width:130px"><option>Пн</option><option>Вт</option><option>Ср</option><option>Чт</option><option>Пт</option><option>Сб</option><option>Вс</option></select>
+        <input id="wtIn" placeholder="Задача..."><button class="btn" onclick="addWT()">+</button>
+      </div>
+      <div class="g3" id="wdGrid" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <!-- ПРИВЫЧКИ -->
+  <section id="habits" class="sec">
+    <div class="hero"><div><h1>Привычки</h1><p>Трекер на месяц по клеточкам</p></div><div class="stats"><div class="pill"><b id="stHM">0</b><span>Отметок</span></div></div></div>
+    <div class="card">
+      <div class="row"><input id="habIn" placeholder="Новая привычка..."><button class="btn" onclick="addHab()">Добавить</button></div>
+      <div class="tbl-wrap" id="habTbl"></div>
+    </div>
+  </section>
+
+  <!-- АНГЛИЙСКИЙ -->
+  <section id="eng" class="sec">
+    <div class="hero"><div><h1>Английский (20 мин)</h1><p>Тренажёр по вашим текстам, словарь и озвучка</p></div><div class="stats"><div class="pill"><b id="stDict">0</b><span>Слов</span></div></div></div>
+    <div class="g2">
+      <div class="card">
+        <h3>📝 Работа с текстом</h3>
+        <textarea id="engTxt" rows="4">Good documentation reduces support tickets and builds user trust. Clear structure helps busy readers find answers.</textarea>
+        <div class="row" style="margin-top:10px;flex-wrap:wrap">
+          <button class="btn btn-s" onclick="findNew()">🔍 Новые слова</button>
+          <button class="btn btn-l btn-s" onclick="cloze()">🧩 Пропуски</button>
+          <button class="btn btn-g btn-s" onclick="scramble()">🔀 Собрать текст</button>
+        </div>
+        <div id="engWork" style="margin-top:12px;padding:14px;background:#F7F9F5;border-radius:16px;line-height:1.7">Выберите режим тренировки выше.</div>
+      </div>
+      <div class="card">
+        <h3>🃏 Карточки и словарь</h3>
+        <div class="fc" onclick="fcFlip=!fcFlip;drawEng()">
+          <div style="font-size:36px" id="fcEm">🤝</div>
+          <div style="font-size:22px;font-weight:800;margin:4px 0" id="fcW">trust</div>
+          <div style="font-size:14px;color:var(--muted)" id="fcT">Нажмите для перевода</div>
+        </div>
+        <div class="row" style="justify-content:center">
+          <button class="btn btn-l btn-s" onclick="speak(D.dict[fcIdx%D.dict.length].w)">🔊 Озвучить</button>
+          <button class="btn btn-s" onclick="fcIdx++;fcFlip=false;drawEng()">Дальше →</button>
+        </div>
+        <div class="row">
+          <input id="dwEn" placeholder="Слово"><input id="dwRu" placeholder="Перевод"><input id="dwEm" placeholder="🌟" style="width:65px">
+          <button class="btn" onclick="addWord()">+</button>
+        </div>
+        <div id="dictBox" style="max-height:200px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- БЛОГ -->
+  <section id="blog" class="sec">
+    <div class="hero"><div><h1>Блог и контент</h1><p>План для Telegram, Instagram и YouTube</p></div><div class="stats"><div class="pill"><b id="stBP">0</b><span>Постов</span></div></div></div>
+    <div class="g2">
+      <div class="card">
+        <h3>🗓 Календарь публикаций</h3>
+        <div class="row" style="flex-wrap:wrap">
+          <select id="bpPlat" style="width:125px"><option>Telegram</option><option>Instagram</option><option>YouTube</option></select>
+          <input type="date" id="bpDate" style="width:145px">
+          <input id="bpTit" placeholder="Тема..." style="flex:1;min-width:150px">
+          <button class="btn" onclick="addBP()">+</button>
+        </div>
+        <div id="bpList"></div>
+      </div>
+      <div class="card">
+        <h3>💡 Банк идей</h3>
+        <div class="row"><input id="biIn" placeholder="Новая идея..."><button class="btn" onclick="addBI()">+</button></div>
+        <div id="biList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЗДОРОВЬЕ -->
+  <section id="health" class="sec">
+    <div class="hero"><div><h1>Здоровье и спорт</h1><p>Цикл, питание, вода и тренировки</p></div><div class="stats"><div class="pill"><b id="stCyc">—</b><span>День цикла</span></div><div class="pill"><b id="stWat">0/8</b><span>Вода</span></div></div></div>
+    <div class="g3">
+      <div class="card">
+        <h3>🌸 Трекер цикла</h3>
+        <small>Начало цикла:</small><input type="date" id="cycDate" style="margin:6px 0 10px" onchange="calcCyc()">
+        <div id="cycBox" style="background:rgba(201,143,211,0.22);padding:12px;border-radius:16px;font-size:13px;line-height:1.5;margin-bottom:10px"></div>
+        <small>Симптомы:</small><input id="cycSym" style="margin-top:4px" oninput="saveHealth()">
+      </div>
+      <div class="card">
+        <h3>💧 Вода и питание</h3>
+        <p style="margin-bottom:10px">Стаканов воды: <b id="watTxt">0</b> / 8</p>
+        <div class="row"><button class="btn btn-s" onclick="addWat(1)">+ 1 стакан 💧</button><button class="btn btn-o btn-s" onclick="addWat(-1)">− 1</button></div>
+        <small>Питание:</small><textarea id="nutTxt" rows="4" style="margin-top:6px" oninput="saveHealth()"></textarea>
+      </div>
+      <div class="card">
+        <h3>🏃‍♀️ Тренировки недели</h3>
+        <div class="row"><input id="wkIn" placeholder="Тренировка..."><button class="btn" onclick="addWk()">+</button></div>
+        <div id="wkList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- КНИГИ, ИДЕИ, РАЗВИТИЕ, ПУТЕШЕСТВИЯ -->
+  <section id="books" class="sec">
+    <div class="hero"><div><h1>Книги</h1><p>Список чтения и заметки</p></div><div class="stats"><div class="pill"><b id="stBk">0</b><span>Книг</span></div></div></div>
+    <div class="card">
+      <div class="row"><input id="bkTit" placeholder="Книга и автор..."><select id="bkSt" style="width:150px"><option>Читаю сейчас</option><option>В планах</option><option>Прочитано</option></select><button class="btn" onclick="addBk()">+</button></div>
+      <div id="bkList"></div>
+    </div>
+  </section>
+
+  <section id="ideas" class="sec">
+    <div class="hero"><div><h1>Идеи и интересы</h1><p>Вдохновение, проекты и хобби</p></div><div class="stats"><div class="pill"><b id="stId">0</b><span>Записей</span></div></div></div>
+    <div class="g2">
+      <div class="card"><h3>✨ Идеи</h3><div class="row"><input id="idIn" placeholder="Идея..."><button class="btn" onclick="addArr('ideas','idIn')">+</button></div><div id="ideasBox"></div></div>
+      <div class="card"><h3>🎨 Интересы</h3><div class="row"><input id="intIn" placeholder="Интерес..."><button class="btn" onclick="addArr('interests','intIn')">+</button></div><div id="interestsBox"></div></div>
+    </div>
+  </section>
+
+  <section id="growth" class="sec">
+    <div class="hero"><div><h1>План развития</h1><p>Карьера технического писателя, управление и личный рост</p></div><div class="stats"><div class="pill"><b id="stGr">0/0</b><span>Навыки</span></div></div></div>
+    <div class="card">
+      <div class="row"><select id="grCat" style="width:180px"><option>Технический писатель</option><option>Администрирование</option><option>Личный рост</option></select><input id="grIn" placeholder="Навык или цель..."><button class="btn" onclick="addGr()">+</button></div>
+      <div id="grList"></div>
+    </div>
+  </section>
+
+  <section id="travel" class="sec">
+    <div class="hero"><div><h1>Путешествия</h1><p>Маршруты и заметки для поездок</p></div><div class="stats"><div class="pill"><b id="stTr">0</b><span>Мест</span></div></div></div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="row"><input id="trPl" placeholder="Страна / город" style="width:200px"><input id="trNt" placeholder="Заметки..."><button class="btn" onclick="addTr()">+</button></div>
+    </div>
+    <div class="g2" id="trList"></div>
+  </section>
+</main>
+<script>
+const KEY = 'cabinet_compact_v1';
+const iso = (off=0) => { const d=new Date(); d.setDate(d.getDate()+off); return d.toISOString().split('T')[0]; };
+
+let D = JSON.parse(localStorage.getItem(KEY)) || {
+  home: { en: 4, mo: 5, goal: 'Согласовать структуру документации и позаниматься английским 20 мин', win: 'Закрыла задачи по релизу и почитала перед сном', move: 'Разобрать почту утром', foc: 85 },
+  today: [
+    { id: 1, p: 'm', t: '08:30 — 20 минут английского за кофе', d: true },
+    { id: 2, p: 'd', t: '11:00 — Обновить руководство пользователя', d: false },
+    { id: 3, p: 'e', t: '19:30 — Прогулка с ребёнком и чтение', d: false }
+  ],
+  wg: [{ id: 1, t: 'Английский 5 дней по 20 минут', d: false }, { id: 2, t: '3 тренировки за неделю', d: true }],
+  wt: { 'Пн':[{id:1,t:'Аудит базы знаний',d:true}], 'Вт':[{id:2,t:'Пост в Telegram',d:false}], 'Ср':[], 'Чт':[], 'Пт':[], 'Сб':[], 'Вс':[] },
+  hab: [
+    { id: 'h1', n: '🏃‍♀️ Спорт', days: { [iso(-1)]:1 } },
+    { id: 'h2', n: '😴 Сон 7–8 ч', days: { [iso(-1)]:1, [iso()]:1 } },
+    { id: 'h3', n: '📖 Чтение', days: { [iso()]:1 } }
+  ],
+  dict: [
+    { w: 'trust', tr: 'доверие', e: '🤝' },
+    { w: 'clarity', tr: 'ясность', e: '💎' },
+    { w: 'workflow', tr: 'рабочий процесс', e: '⚙️' },
+    { w: 'concise', tr: 'лаконичный', e: '✂️' }
+  ],
+  bp: [{ id: 1, pl: 'Telegram', dt: iso(), tit: '5 правил понятной инструкции', d: false }],
+  bi: ['Как совмещать работу техписа, администрирование и материнство', 'Чек-лист проверки текста'],
+  hl: { cyc: iso(-9), sym: 'Много энергии утром', wat: 5, nut: 'Завтрак: омлет с зеленью\nОбед: индейка и киноа', wk: [{ id: 1, t: 'Ср — Йога 30 мин', d: false }] },
+  bk: [{ id: 1, tit: 'Пиши, сокращай — М. Ильяхов', st: 'Прочитано' }, { id: 2, tit: 'Атомные привычки — Д. Клир', st: 'Читаю сейчас' }],
+  ideas: ['Шаблон базы знаний для команды'],
+  interests: ['Изучение API-документации', 'Керамика на выходных'],
+  gr: [{ id: 1, cat: 'Технический писатель', t: 'Освоить Git и Docs-as-Code', d: false }],
+  tr: [{ id: 1, pl: 'Карелия, Сортавала', nt: 'Ретропоезд в Рускеалу, домик с кухней для поездки с ребёнком.' }]
+};
+
+let wodIdx = 0, fcIdx = 0, fcFlip = false, tSec = 1200, tBase = 20, tInt = null;
+const save = () => { localStorage.setItem(KEY, JSON.stringify(D)); stats(); };
+
+function tab(id, b) {
+  document.querySelectorAll('.sec').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x => x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (b) b.classList.add('active');
+}
+
+function drawScales() {
+  ['en','mo'].forEach(k => {
+    const el = document.getElementById(k==='en'?'scEnergy':'scMood');
+    el.innerHTML = [1,2,3,4,5].map(n => `<button class="${D.home[k]===n?'sel':''}" onclick="D.home.${k}=${n};save();drawScales()">${n}</button>`).join('');
+  });
+}
+
+function saveHome() {
+  D.home.goal = document.getElementById('inMainGoal').value;
+  D.home.win = document.getElementById('inWin').value;
+  D.home.move = document.getElementById('inMove').value;
+  save();
+}
+
+function drawToday() {
+  const names = { m:'🌅 Утро', d:'☀️ День', e:'🌙 Вечер' };
+  document.getElementById('todayList').innerHTML = ['m','d','e'].map(p => {
+    const items = D.today.filter(x => x.p === p);
+    return `<div style="font-size:12px;font-weight:800;color:var(--muted);margin:10px 0 5px">${names[p]}</div>` +
+      items.map(x => `<div class="item ${x.d?'done':''}">
+        <label class="item-l"><input type="checkbox" ${x.d?'checked':''} onchange="x=D.today.find(i=>i.id===${x.id});x.d=!x.d;save();drawToday()"><span>${x.t}</span></label>
+        <div class="row" style="margin:0;gap:4px">
+          <button class="btn btn-o btn-s" onclick="editItem(D.today,${x.id},'t',drawToday)">✎</button>
+          <button class="btn btn-o btn-s" title="На завтра" onclick="moveTom(${x.id})">➡️</button>
+          <button class="btn btn-o btn-s" onclick="D.today=D.today.filter(i=>i.id!==${x.id});save();drawToday()">✕</button>
+        </div></div>`).join('');
+  }).join('');
+}
+
+function addToday() {
+  const v = document.getElementById('tTxt').value.trim(); if (!v) return;
+  D.today.push({ id: Date.now(), p: document.getElementById('tPer').value, t: v, d: false });
+  document.getElementById('tTxt').value = ''; save(); drawToday();
+}
+
+function moveTom(id) {
+  const idx = D.today.findIndex(x => x.id === id); if (idx < 0) return;
+  const [it] = D.today.splice(idx, 1);
+  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  D.wt[days[(new Date().getDay()+1)%7]].push({ id: Date.now(), t: it.t, d: false });
+  save(); drawToday(); drawWeek();
+}
+
+function editItem(arr, id, field, cb) {
+  const it = arr.find(x => x.id === id); if (!it) return;
+  const v = prompt('Изменить:', it[field]);
+  if (v !== null && v.trim()) { it[field] = v.trim(); save(); cb(); }
+}
+
+function setT(m) { clearInterval(tInt); tInt=null; document.getElementById('tBtn').textContent='Старт'; tBase=m; tSec=m*60; drawT(); }
+function drawT() { document.getElementById('tDisp').textContent = `${String(Math.floor(tSec/60)).padStart(2,'0')}:${String(tSec%60).padStart(2,'0')}`; }
+function togT() {
+  const b = document.getElementById('tBtn');
+  if (tInt) { clearInterval(tInt); tInt=null; b.textContent='Продолжить'; }
+  else {
+    b.textContent='Пауза';
+    tInt = setInterval(() => {
+      if (tSec>0) { tSec--; drawT(); }
+      else { clearInterval(tInt); tInt=null; b.textContent='Старт'; D.home.foc+=tBase; save(); alert(`+${tBase} мин в копилку!`); }
+    }, 1000);
+  }
+}
+
+function speak(txt) { if ('speechSynthesis' in window) { speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.lang='en-US'; speechSynthesis.speak(u); } }
+function drawWod() {
+  if (!D.dict.length) return;
+  const w = D.dict[wodIdx % D.dict.length];
+  document.getElementById('wodBox').innerHTML = `<div style="font-size:36px">${w.e}</div><b style="font-size:20px">${w.w}</b><div style="color:var(--muted);font-size:14px">${w.tr}</div>`;
+}
+
+function streak(days) {
+  let s = 0, off = 0;
+  while (true) { if (days[iso(-off)]) { s++; off++; } else if (off===0) off++; else break; }
+  return s;
+}
+
+function togHab(id, dt) {
+  const h = D.hab.find(x => x.id === id);
+  if (h.days[dt]) delete h.days[dt]; else h.days[dt] = 1;
+  save(); drawHab();
+}
+
+function addHab() {
+  const v = document.getElementById('habIn').value.trim(); if (!v) return;
+  D.hab.push({ id: 'h'+Date.now(), n: v, days: {} });
+  document.getElementById('habIn').value = ''; save(); drawHab();
+}
+
+function drawHab() {
+  const td = iso();
+  document.getElementById('homeHab').innerHTML = D.hab.map(h => `
+    <div class="item">
+      <label class="item-l"><input type="checkbox" ${h.days[td]?'checked':''} onchange="togHab('${h.id}','${td}')"><b>${h.n}</b></label>
+      <span class="tag">🔥 ${streak(h.days)} дн.</span>
+    </div>`).join('');
+
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth(), dc = new Date(y, m+1, 0).getDate();
+  let t = '<table><tr><th style="text-align:left">Привычка</th>';
+  for (let d=1; d<=dc; d++) t += `<th>${d}</th>`;
+  t += '<th>🔥</th><th></th></tr>';
+  D.hab.forEach(h => {
+    t += `<tr><td style="font-weight:700;white-space:nowrap;padding-right:8px">${h.n}</td>`;
+    for (let d=1; d<=dc; d++) {
+      const k = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      t += `<td class="dc ${h.days[k]?'on':''}" onclick="togHab('${h.id}','${k}')">✓</td>`;
+    }
+    t += `<td style="font-weight:800;text-align:center">${streak(h.days)}</td><td><button class="btn btn-o btn-s" onclick="D.hab=D.hab.filter(x=>x.id!=='${h.id}');save();drawHab()">✕</button></td></tr>`;
+  });
+  document.getElementById('habTbl').innerHTML = t + '</table>';
+}
+
+function addWG() { const v=document.getElementById('wgIn').value.trim(); if(!v)return; D.wg.push({id:Date.now(),t:v,d:false}); document.getElementById('wgIn').value=''; save(); drawWeek(); }
+function addWT() { const v=document.getElementById('wtIn').value.trim(); if(!v)return; D.wt[document.getElementById('wdSel').value].push({id:Date.now(),t:v,d:false}); document.getElementById('wtIn').value=''; save(); drawWeek(); }
+function drawWeek() {
+  document.getElementById('wgList').innerHTML = D.wg.map(g => `<div class="item ${g.d?'done':''}"><label class="item-l"><input type="checkbox" ${g.d?'checked':''} onchange="x=D.wg.find(i=>i.id===${g.id});x.d=!x.d;save();drawWeek()"><span>${g.t}</span></label><button class="btn btn-o btn-s" onclick="D.wg=D.wg.filter(i=>i.id!==${g.id});save();drawWeek()">✕</button></div>`).join('');
+  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  document.getElementById('wdGrid').innerHTML = days.map((day, idx) => {
+    const nx = days[(idx+1)%7];
+    return `<div style="background:#F7F9F5;padding:14px;border-radius:18px"><b style="color:var(--dark)">${day}</b><div style="margin-top:8px">` +
+      (D.wt[day]||[]).map(t => `<div class="item ${t.d?'done':''}" style="background:#fff;padding:7px 9px"><label class="item-l"><input type="checkbox" ${t.d?'checked':''} onchange="x=D.wt['${day}'].find(i=>i.id===${t.id});x.d=!x.d;save();drawWeek()"><span style="font-size:13px">${t.t}</span></label>
+      <button class="btn btn-o btn-s" onclick="i=D.wt['${day}'].findIndex(x=>x.id===${t.id});[m]=D.wt['${day}'].splice(i,1);D.wt['${nx}'].push(m);save();drawWeek()">→</button></div>`).join('') + '</div></div>';
+  }).join('');
+}
+
+function findNew() {
+  const txt = document.getElementById('engTxt').value;
+  const known = new Set(D.dict.map(x => x.w.toLowerCase()));
+  document.getElementById('engWork').innerHTML = txt.split(/(\s+|[.,!?])/).map(p => {
+    const c = p.toLowerCase().replace(/[^a-z]/g,'');
+    return (c.length>3 && !known.has(c)) ? `<span class="w-new" onclick="tr=prompt('Перевод ${c}:');if(tr){D.dict.unshift({w:'${c}',tr,e:'✨'});save();drawEng();findNew()}">${p}</span>` : p;
+  }).join('');
+}
+function cloze() {
+  const words = document.getElementById('engTxt').value.split(/\s+/);
+  document.getElementById('engWork').innerHTML = words.map(w => {
+    const c = w.replace(/[^a-zA-Z]/g,'');
+    return (c.length>4 && Math.random()>0.55) ? `<input data-a="${c}" style="width:80px;display:inline-block;padding:2px 6px;margin:2px">` : w;
+  }).join(' ') + `<br><button class="btn btn-s" style="margin-top:8px" onclick="document.querySelectorAll('#engWork input').forEach(i=>i.value=i.dataset.a)">Показать ответы</button>`;
+}
+
+function scramble() {
+  const s = document.getElementById('engTxt').value.split(/[.!?]/)[0].trim().split(/\s+/);
+  const sh = [...s].sort(()=>Math.random()-0.5);
+  document.getElementById('engWork').innerHTML = `<div id="scOut" style="min-height:34px;background:#fff;padding:8px;border-radius:10px;margin-bottom:8px;font-weight:700"></div>` +
+    sh.map(w => `<span class="chip" onclick="this.style.display='none';document.getElementById('scOut').textContent+=' ${w}'">${w}</span>`).join('');
+}
+
+function addWord() {
+  const w=document.getElementById('dwEn').value.trim(), tr=document.getElementById('dwRu').value.trim(), e=document.getElementById('dwEm').value.trim()||'🌟';
+  if(!w||!tr)return; D.dict.unshift({w,tr,e}); document.getElementById('dwEn').value=''; document.getElementById('dwRu').value=''; save(); drawEng();
+}
+
+function drawEng() {
+  if (D.dict.length) {
+    const c = D.dict[fcIdx % D.dict.length];
+    document.getElementById('fcEm').textContent = c.e;
+    document.getElementById('fcW').textContent = c.w;
+    document.getElementById('fcT').textContent = fcFlip ? c.tr : 'Нажмите для перевода';
+  }
+  document.getElementById('dictBox').innerHTML = D.dict.map((x,i) => `<div class="item"><span>${x.e} <b>${x.w}</b> — ${x.tr}</span><div class="row" style="margin:0"><button class="btn btn-o btn-s" onclick="speak('${x.w}')">🔊</button><button class="btn btn-o btn-s" onclick="D.dict.splice(${i},1);save();drawEng()">✕</button></div></div>`).join('');
+  drawWod();
+}
+
+function addBP() { const tit=document.getElementById('bpTit').value.trim(); if(!tit)return; D.bp.push({id:Date.now(),pl:document.getElementById('bpPlat').value,dt:document.getElementById('bpDate').value||iso(),tit,d:false}); document.getElementById('bpTit').value=''; save(); drawBlog(); }
+function addBI() { const v=document.getElementById('biIn').value.trim(); if(!v)return; D.bi.unshift(v); document.getElementById('biIn').value=''; save(); drawBlog(); }
+function drawBlog() {
+  document.getElementById('bpList').innerHTML = D.bp.map(p => `<div class="item ${p.d?'done':''}"><label class="item-l"><input type="checkbox" ${p.d?'checked':''} onchange="x=D.bp.find(i=>i.id===${p.id});x.d=!x.d;save();drawBlog()"><span><span class="tag tag-l">${p.pl}</span> <b>${p.dt}</b> ${p.tit}</span></label><button class="btn btn-o btn-s" onclick="D.bp=D.bp.filter(i=>i.id!==${p.id});save();drawBlog()">✕</button></div>`).join('');
+  document.getElementById('biList').innerHTML = D.bi.map((x,i) => `<div class="item"><span>💡 ${x}</span><button class="btn btn-o btn-s" onclick="D.bi.splice(${i},1);save();drawBlog()">✕</button></div>`).join('');
+}
+
+function calcCyc() {
+  const v = document.getElementById('cycDate').value; D.hl.cyc = v; save();
+  if (!v) return;
+  const day = ((Math.max(1, Math.floor((new Date()-new Date(v))/86400000)+1)-1)%28)+1;
+  document.getElementById('stCyc').textContent = day + '-й';
+  const info = day<=5 ? ['Менструальная фаза','Больше железа и тёплой еды.','Мягкая растяжка и прогулки.'] :
+               day<=13 ? ['Фолликулярная фаза','Свежие овощи и белок.','Силовые тренировки и кардио.'] :
+               day<=16 ? ['Овуляция — пик сил','Клетчатка и больше воды.','Активные тренировки и танцы.'] :
+                         ['Лютеиновая фаза','Магний: орехи, авокадо, зелень.','Йога, пилатес, плавание.'];
+  document.getElementById('cycBox').innerHTML = `<b>${info[0]} (${day} день)</b><br>🥗 ${info[1]}<br>🏃‍♀️ ${info[2]}`;
+}
+
+function addWat(n) { D.hl.wat = Math.max(0, (D.hl.wat||0)+n); document.getElementById('watTxt').textContent = D.hl.wat; save(); }
+function saveHealth() { D.hl.sym = document.getElementById('cycSym').value; D.hl.nut = document.getElementById('nutTxt').value; save(); }
+function addWk() { const v=document.getElementById('wkIn').value.trim(); if(!v)return; D.hl.wk.push({id:Date.now(),t:v,d:false}); document.getElementById('wkIn').value=''; save(); drawWk(); }
+function drawWk() { document.getElementById('wkList').innerHTML = D.hl.wk.map(w => `<div class="item ${w.d?'done':''}"><label class="item-l"><input type="checkbox" ${w.d?'checked':''} onchange="x=D.hl.wk.find(i=>i.id===${w.id});x.d=!x.d;save();drawWk()"><span>${w.t}</span></label><button class="btn btn-o btn-s" onclick="D.hl.wk=D.hl.wk.filter(i=>i.id!==${w.id});save();drawWk()">✕</button></div>`).join(''); }
+
+function addBk() { const tit=document.getElementById('bkTit').value.trim(); if(!tit)return; D.bk.unshift({id:Date.now(),tit,st:document.getElementById('bkSt').value}); document.getElementById('bkTit').value=''; save(); drawBk(); }
+function drawBk() { document.getElementById('bkList').innerHTML = D.bk.map(b => `<div class="item"><span><span class="tag">${b.st}</span> <b>${b.tit}</b></span><button class="btn btn-o btn-s" onclick="D.bk=D.bk.filter(i=>i.id!==${b.id});save();drawBk()">✕</button></div>`).join(''); }
+
+function addArr(k, id) { const v=document.getElementById(id).value.trim(); if(!v)return; D[k].unshift(v); document.getElementById(id).value=''; save(); drawArr(); }
+function drawArr() { ['ideas','interests'].forEach(k => document.getElementById(k+'Box').innerHTML = D[k].map((x,i) => `<div class="item"><span>${x}</span><button class="btn btn-o btn-s" onclick="D['${k}'].splice(${i},1);save();drawArr()">✕</button></div>`).join('')); }
+
+function addGr() { const t=document.getElementById('grIn').value.trim(); if(!t)return; D.gr.unshift({id:Date.now(),cat:document.getElementById('grCat').value,t,d:false}); document.getElementById('grIn').value=''; save(); drawGr(); }
+function drawGr() { document.getElementById('grList').innerHTML = D.gr.map(g => `<div class="item ${g.d?'done':''}"><label class="item-l"><input type="checkbox" ${g.d?'checked':''} onchange="x=D.gr.find(i=>i.id===${g.id});x.d=!x.d;save();drawGr()"><span><span class="tag tag-l">${g.cat}</span> ${g.t}</span></label><button class="btn btn-o btn-s" onclick="D.gr=D.gr.filter(i=>i.id!==${g.id});save();drawGr()">✕</button></div>`).join(''); }
+
+function addTr() { const pl=document.getElementById('trPl').value.trim(); if(!pl)return; D.tr.unshift({id:Date.now(),pl,nt:document.getElementById('trNt').value.trim()}); document.getElementById('trPl').value=''; document.getElementById('trNt').value=''; save(); drawTr(); }
+function drawTr() { document.getElementById('trList').innerHTML = D.tr.map(t => `<div class="card"><h3><span>✈️ ${t.pl}</span><button class="btn btn-o btn-s" onclick="D.tr=D.tr.filter(i=>i.id!==${t.id});save();drawTr()">✕</button></h3><p style="font-size:14px;color:var(--muted)">${t.nt}</p></div>`).join(''); }
+
+function stats() {
+  document.getElementById('stTasks').textContent = `${D.today.filter(x=>x.d).length}/${D.today.length}`;
+  document.getElementById('stFocus').textContent = `${D.home.foc} мин`;
+  document.getElementById('stHab').textContent = `${D.hab.filter(h=>h.days[iso()]).length}/${D.hab.length}`;
+  document.getElementById('stWG').textContent = `${D.wg.filter(x=>x.d).length}/${D.wg.length}`;
+  document.getElementById('stHM').textContent = D.hab.reduce((a,h)=>a+Object.keys(h.days).length,0);
+  document.getElementById('stDict').textContent = D.dict.length;
+  document.getElementById('stBP').textContent = D.bp.length;
+  document.getElementById('stWat').textContent = `${D.hl.wat||0}/8`;
+  document.getElementById('stBk').textContent = D.bk.length;
+  document.getElementById('stId').textContent = D.ideas.length + D.interests.length;
+  document.getElementById('stGr').textContent = `${D.gr.filter(x=>x.d).length}/${D.gr.length}`;
+  document.getElementById('stTr').textContent = D.tr.length;
+}
+
+function expData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:'application/json'})); a.download=`cabinet-${iso()}.json`; a.click(); }
+function impData(e) { const r=new FileReader(); r.onload=ev=>{ D=JSON.parse(ev.target.result); save(); location.reload(); }; r.readAsText(e.target.files[0]); }
+
+window.onload = () => {
+  const h = new Date().getHours();
+  document.getElementById('greet').textContent = h<12?'Доброе утро! ☀️':h<18?'Добрый день! 🌿':'Добрый вечер! ✨';
+  document.getElementById('subDate').textContent = new Date().toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'}) + ' • Технический писатель, администратор, мама';
+  document.getElementById('inMainGoal').value = D.home.goal;
+  document.getElementById('inWin').value = D.home.win;
+  document.getElementById('inMove').value = D.home.move;
+  document.getElementById('cycDate').value = D.hl.cyc;
+  document.getElementById('cycSym').value = D.hl.sym;
+  document.getElementById('nutTxt').value = D.hl.nut;
+  document.getElementById('watTxt').textContent = D.hl.wat;
+  drawScales(); drawToday(); drawHab(); drawWeek(); drawEng(); drawBlog(); calcCyc(); drawWk(); drawBk(); drawArr(); drawGr(); drawTr(); stats();
+};
+</script>
+</body>
+</html>
+
+
