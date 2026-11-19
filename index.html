@@ -575,6 +575,97 @@ window.onload = () => {
 };
 </script>
 </body>
+<!-- ВИДЖЕТ КОТИКА С БАЛЛАМИ -->
+<style>
+  #catPet {
+    position: fixed; right: 20px; bottom: 20px; z-index: 95;
+    background: #FFFFFF; border: 2px solid #D4DDD0; border-radius: 24px;
+    padding: 12px 16px; box-shadow: 0 12px 30px rgba(31,58,18,0.14);
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    transition: transform 0.2s; max-width: 270px; user-select: none;
+  }
+  #catPet:hover { transform: translateY(-3px); }
+  #catFace { font-size: 36px; line-height: 1; transition: transform 0.25s; }
+  #catPet.jump #catFace { transform: scale(1.28) rotate(-8deg); }
+  .cat-lvl { font-size: 11px; font-weight: 800; color: #1F3A12; background: #B6D98C; padding: 2px 8px; border-radius: 99px; display: inline-block; margin-bottom: 3px; }
+  .cat-pts { font-size: 15px; font-weight: 800; color: #162410; }
+  .cat-msg { font-size: 11px; color: #5C6B55; margin-top: 2px; line-height: 1.3; }
+  @media (max-width: 820px) { #catPet { bottom: 68px; right: 12px; padding: 9px 13px; } }
+</style>
+
+<div id="catPet" onclick="petCat()">
+  <div id="catFace">🐱</div>
+  <div>
+    <span class="cat-lvl" id="catLvl">Ур. 1 • Котёнок</span>
+    <div class="cat-pts">🐟 <span id="catScore">0</span> баллов</div>
+    <div class="cat-msg" id="catMsg">Выполни задачу — покорми меня!</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const CAT_KEY = 'cabinet_cat_points_v1';
+  let catPoints = Number(localStorage.getItem(CAT_KEY)) || 0;
+
+  const levels = [
+    { min: 0, title: 'Ур. 1 • Сонный котёнок', icon: '🐱' },
+    { min: 50, title: 'Ур. 2 • Игривый пушистик', icon: '😺' },
+    { min: 150, title: 'Ур. 3 • Кот-организатор', icon: '😸' },
+    { min: 300, title: 'Ур. 4 • Мастер фокуса', icon: '😻' },
+    { min: 500, title: 'Ур. 5 • Император порядка', icon: '👑' }
+  ];
+
+  const phrases = [
+    'Мур-мяу! Ты отлично справляешься!',
+    'Вкусная рыбка! Так держать!',
+    'Я тобой горжусь, мама-супергерой!',
+    'Ещё один шаг к цели! Мурр~',
+    'Какая продуктивность! Дай поглажу!'
+  ];
+
+  function renderCat(customText) {
+    const lvl = [...levels].reverse().find(l => catPoints >= l.min) || levels[0];
+    document.getElementById('catScore').textContent = catPoints;
+    document.getElementById('catLvl').textContent = lvl.title;
+    document.getElementById('catFace').textContent = lvl.icon;
+    if (customText) document.getElementById('catMsg').textContent = customText;
+  }
+
+  function addCatPoints(pts, reason) {
+    catPoints = Math.max(0, catPoints + pts);
+    localStorage.setItem(CAT_KEY, catPoints);
+    const box = document.getElementById('catPet');
+    box.classList.remove('jump');
+    void box.offsetWidth;
+    box.classList.add('jump');
+    const msg = pts > 0 ? `+${pts} 🐟! ${phrases[Math.floor(Math.random() * phrases.length)]}` : 'Ничего страшного, наверстаем!';
+    renderCat(reason || msg);
+  }
+
+  window.petCat = function() {
+    addCatPoints(0, 'Муррр... Погладили котика 💛');
+  };
+
+  // Начисляем +10 баллов за любую поставленную галочку
+  document.addEventListener('change', function(e) {
+    if (e.target && e.target.type === 'checkbox') {
+      addCatPoints(e.target.checked ? 10 : -10);
+    }
+  });
+
+  // Начисляем +20 баллов за завершение таймера фокуса
+  const origAlert = window.alert;
+  window.alert = function(text) {
+    if (typeof text === 'string' && text.includes('мин в копилку')) {
+      addCatPoints(20, '+20 🐟 за время в фокусе! Ты супер!');
+    }
+    origAlert(text);
+  };
+
+  renderCat();
+})();
+</script>
+
 </html>
 
 
