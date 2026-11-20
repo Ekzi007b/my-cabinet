@@ -94,7 +94,276 @@
   <!-- ГЛАВНАЯ -->
   <section id="home" class="sec active">
     <div class="hero">
-      <div><h1 id="greet">Добрый день!</h1><p id="subDate">Технический писатель • Администратор • Мама</p></div>
+      <div><h1 id="greet">Добрый день!</h1><p id="subDate">Мария</p></div>
+      <!-- Начало блока Интерактивного Кота -->
+<div id="cat-widget-container">
+  
+  <!-- Левая панель: Настройки и обязательные дела на сегодня -->
+  <div class="cat-panel-left">
+    <h4>⚙ Обязательно сделать сегодня</h4>
+    <div class="todo-today-box">
+      <ul id="today-must-do-list">
+        <!-- Список дел генерируется автоматически -->
+      </ul>
+      <div class="add-todo-row">
+        <input type="text" id="new-today-task" placeholder="Новое дело на сегодня...">
+        <button onclick="addTodayTask()">+</button>
+      </div>
+    </div>
+
+    <div class="cat-settings">
+      <label>🎯 Цель на день (всего баллов): <input type="number" id="target-score" value="10" min="1"></label>
+      <div class="score-rules">
+        <span>Клик по вкладкам / Задача: +<input type="number" id="p-task" value="1"></span><br>
+        <span>Стакан воды: +<input type="number" id="p-water" value="1"></span><br>
+        <span>Привычка: +<input type="number" id="p-habit" value="2"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Правая панель: Игровая зона с Котом по центру шкалы -->
+  <div class="cat-panel-right">
+    <div class="cat-header">
+      <span class="cat-level">🐱 Ур. 1 • Котёнок</span>
+      <span class="cat-score-text">🐟 <span id="current-score">0</span> / <span id="max-score">10</span> баллов</span>
+    </div>
+
+    <div class="cat-track-wrapper">
+      <div class="cat-track">
+        <!-- Кот сидит строго по центру текущего прогресса -->
+        <div id="interactive-cat" onclick="jumpCat()">🐈</div>
+        <div class="fish-finish">🐟</div>
+        <div id="cat-progress-bar"></div>
+      </div>
+    </div>
+
+    <!-- Кнопки действий, которые имитируют активность во вкладках страницы -->
+    <div class="cat-actions">
+      <button onclick="addPoints('task')" class="btn-act">✅ Сделала дело / вкладку</button>
+      <button onclick="addPoints('water')" class="btn-act">💧 Выпила воду</button>
+      <button onclick="addPoints('habit')" class="btn-act">✨ Выполнила привычку</button>
+      <button onclick="resetCat()" class="reset-btn">🔄 Сбросить день</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Стили оформления (CSS) -->
+<style>
+#cat-widget-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 850px;
+  margin: 30px auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid #eaeaea;
+  display: flex;
+  gap: 30px;
+}
+
+/* Распределение панелей */
+.cat-panel-left {
+  flex: 1;
+  border-right: 1px solid #eee;
+  padding-right: 20px;
+}
+.cat-panel-right {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Обязательные дела на сегодня */
+.cat-panel-left h4 { margin: 0 0 12px 0; color: #333; font-size: 15px; }
+.todo-today-box { margin-bottom: 15px; }
+#today-must-do-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
+#today-must-do-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: #f7f9fa;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+#today-must-do-list input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
+.todo-remove { color: #ff5c5c; cursor: pointer; font-weight: bold; background: none; border: none; padding: 0 5px; }
+.add-todo-row { display: flex; gap: 5px; }
+.add-todo-row input { flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+.add-todo-row button { background: #65c3ba; color: white; border: none; width: 30px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+/* Настройки веса баллов */
+.cat-settings { background: #fdfdfd; padding: 12px; border-radius: 10px; font-size: 13px; border: 1px dashed #ddd; }
+.cat-settings label { font-weight: bold; display: block; margin-bottom: 8px; }
+.cat-settings input[type="number"] { width: 45px; padding: 2px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
+.score-rules { color: #666; line-height: 1.6; }
+
+/* Зона трека и Кота */
+.cat-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
+.cat-track-wrapper { padding: 20px 0; }
+.cat-track { position: relative; height: 14px; background: #eef2f5; border-radius: 7px; margin: 20px 10px; }
+#cat-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #65c3ba 0%, #abecd6 100%); border-radius: 7px; transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* Кот строго по центру отрезка */
+#interactive-cat {
+  position: absolute;
+  font-size: 36px;
+  top: -38px;
+  left: 0%;
+  transform: translateX(-50%);
+  transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  user-select: none;
+  z-index: 10;
+}
+.jump { animation: catJump 0.4s ease-in-out; }
+@keyframes catJump {
+  0%, 100% { top: -38px; transform: translateX(-50%) scale(1); }
+  50% { top: -75px; transform: translateX(-50%) scale(1.2) rotate(-5deg); }
+}
+.fish-finish { position: absolute; right: -12px; top: -24px; font-size: 24px; }
+
+/* Кнопки */
+.cat-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+.btn-act { background: #f0f4f8; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
+.btn-act:hover { background: #e1e8f0; transform: translateY(-1px); }
+.reset-btn { background: #fff1f1; color: #ff5c5c; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.reset-btn:hover { background: #ffe4e4; }
+
+/* Адаптивность для узких экранов */
+@media (max-width: 700px) {
+#cat-widget-container {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 850px;
+  margin: 30px auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid #eaeaea;
+  display: flex; /* Кот будет отображаться гибким блоком */
+  gap: 30px;
+  clear: both;   /* Отменяет обтекание другими элементами */
+}
+</style>
+
+<!-- Скрипты логики и сохранения (JavaScript) -->
+<script>
+// Загрузка сохраненных данных или создание новых
+let catData = JSON.parse(localStorage.getItem('catDashboardData')) || {
+  currentScore: 0,
+  todayTasks: [
+    { text: "Выучить 5 слов на английском", done: false },
+    { text: "Написать пост в блог", done: false }
+  ]
+};
+
+// Функция сохранения в память браузера
+function saveData() {
+  localStorage.setItem('catDashboardData', JSON.stringify(catData));
+}
+
+function updateWidget() {
+  const target = parseInt(document.getElementById('target-score').value) || 10;
+  document.getElementById('max-score').innerText = target;
+  document.getElementById('current-score').innerText = catData.currentScore;
+  
+  let percentage = (catData.currentScore / target) * 100;
+  if (percentage > 100) percentage = 100;
+  if (percentage < 0) percentage = 0;
+  
+  document.getElementById('cat-progress-bar').style.width = percentage + '%';
+  document.getElementById('interactive-cat').style.left = percentage + '%';
+  
+  renderTodayTasks();
+}
+
+function addPoints(type) {
+  let points = 1;
+  if (type === 'task') points = parseInt(document.getElementById('p-task').value) || 1;
+  if (type === 'water') points = parseInt(document.getElementById('p-water').value) || 1;
+  if (type === 'habit') points = parseInt(document.getElementById('p-habit').value) || 2;
+  
+  catData.currentScore += points;
+  saveData();
+  updateWidget();
+  jumpCat();
+}
+
+function jumpCat() {
+  const cat = document.getElementById('interactive-cat');
+  cat.classList.add('jump');
+  setTimeout(() => cat.classList.remove('jump'), 400);
+}
+
+// Управление списком "Обязательно на сегодня"
+function renderTodayTasks() {
+  const listEl = document.getElementById('today-must-do-list');
+  listEl.innerHTML = '';
+  catData.todayTasks.forEach((task, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <label style="text-decoration: ${task.done ? 'line-through' : 'none'}; color: ${task.done ? '#aaa' : '#333'}">
+        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTodayTask(${index})">
+        ${task.text}
+      </label>
+      <button class="todo-remove" onclick="removeTodayTask(${index})">×</button>
+    `;
+    listEl.appendChild(li);
+  });
+}
+
+function addTodayTask() {
+  const input = document.getElementById('new-today-task');
+  if (input.value.trim() !== '') {
+    catData.todayTasks.push({ text: input.value.trim(), done: false });
+    input.value = '';
+    saveData();
+    renderTodayTasks();
+  }
+}
+
+function toggleTodayTask(index) {
+  catData.todayTasks[index].done = !catData.todayTasks[index].done;
+  // Если задача отмечена как выполненная — котик получает баллы!
+  if (catData.todayTasks[index].done) {
+    addPoints('task');
+  }
+  saveData();
+  updateWidget();
+}
+
+function removeTodayTask(index) {
+  catData.todayTasks.splice(index, 1);
+  saveData();
+  renderTodayTasks();
+}
+
+function resetCat() {
+  if(confirm("Сбросить баллы и очистить обязательные задачи на сегодня?")) {
+    catData.currentScore = 0;
+    catData.todayTasks = [];
+    saveData();
+    updateWidget();
+  }
+}
+
+// Слушатель изменения цели
+document.getElementById('target-score').addEventListener('input', () => {
+  saveData();
+  updateWidget();
+});
+
+// Запуск при загрузке страницы
+window.onload = function() {
+  updateWidget();
+};
+</script>
+<!-- Конец блока Интерактивного Кота -->
       <div class="stats">
         <div class="pill"><b id="stTasks">0/0</b><span>Задачи дня</span></div>
         <div class="pill"><b id="stFocus">0 мин</b><span>Фокус недели</span></div>
@@ -575,265 +844,7 @@ window.onload = () => {
 };
 </script>
 </body>
-<!-- Начало блока Интерактивного Кота -->
-<div id="cat-widget-container">
-  
-  <!-- Левая панель: Настройки и обязательные дела на сегодня -->
-  <div class="cat-panel-left">
-    <h4>⚙ Обязательно сделать сегодня</h4>
-    <div class="todo-today-box">
-      <ul id="today-must-do-list">
-        <!-- Список дел генерируется автоматически -->
-      </ul>
-      <div class="add-todo-row">
-        <input type="text" id="new-today-task" placeholder="Новое дело на сегодня...">
-        <button onclick="addTodayTask()">+</button>
-      </div>
-    </div>
 
-    <div class="cat-settings">
-      <label>🎯 Цель на день (всего баллов): <input type="number" id="target-score" value="10" min="1"></label>
-      <div class="score-rules">
-        <span>Клик по вкладкам / Задача: +<input type="number" id="p-task" value="1"></span><br>
-        <span>Стакан воды: +<input type="number" id="p-water" value="1"></span><br>
-        <span>Привычка: +<input type="number" id="p-habit" value="2"></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Правая панель: Игровая зона с Котом по центру шкалы -->
-  <div class="cat-panel-right">
-    <div class="cat-header">
-      <span class="cat-level">🐱 Ур. 1 • Котёнок</span>
-      <span class="cat-score-text">🐟 <span id="current-score">0</span> / <span id="max-score">10</span> баллов</span>
-    </div>
-
-    <div class="cat-track-wrapper">
-      <div class="cat-track">
-        <!-- Кот сидит строго по центру текущего прогресса -->
-        <div id="interactive-cat" onclick="jumpCat()">🐈</div>
-        <div class="fish-finish">🐟</div>
-        <div id="cat-progress-bar"></div>
-      </div>
-    </div>
-
-    <!-- Кнопки действий, которые имитируют активность во вкладках страницы -->
-    <div class="cat-actions">
-      <button onclick="addPoints('task')" class="btn-act">✅ Сделала дело / вкладку</button>
-      <button onclick="addPoints('water')" class="btn-act">💧 Выпила воду</button>
-      <button onclick="addPoints('habit')" class="btn-act">✨ Выполнила привычку</button>
-      <button onclick="resetCat()" class="reset-btn">🔄 Сбросить день</button>
-    </div>
-  </div>
-
-</div>
-
-<!-- Стили оформления (CSS) -->
-<style>
-#cat-widget-container {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 850px;
-  margin: 30px auto;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  border: 1px solid #eaeaea;
-  display: flex;
-  gap: 30px;
-}
-
-/* Распределение панелей */
-.cat-panel-left {
-  flex: 1;
-  border-right: 1px solid #eee;
-  padding-right: 20px;
-}
-.cat-panel-right {
-  flex: 1.5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* Обязательные дела на сегодня */
-.cat-panel-left h4 { margin: 0 0 12px 0; color: #333; font-size: 15px; }
-.todo-today-box { margin-bottom: 15px; }
-#today-must-do-list { list-style: none; padding: 0; margin: 0 0 10px 0; }
-#today-must-do-list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 8px;
-  background: #f7f9fa;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  font-size: 13px;
-}
-#today-must-do-list input[type="checkbox"] { margin-right: 8px; cursor: pointer; }
-.todo-remove { color: #ff5c5c; cursor: pointer; font-weight: bold; background: none; border: none; padding: 0 5px; }
-.add-todo-row { display: flex; gap: 5px; }
-.add-todo-row input { flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
-.add-todo-row button { background: #65c3ba; color: white; border: none; width: 30px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-
-/* Настройки веса баллов */
-.cat-settings { background: #fdfdfd; padding: 12px; border-radius: 10px; font-size: 13px; border: 1px dashed #ddd; }
-.cat-settings label { font-weight: bold; display: block; margin-bottom: 8px; }
-.cat-settings input[type="number"] { width: 45px; padding: 2px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
-.score-rules { color: #666; line-height: 1.6; }
-
-/* Зона трека и Кота */
-.cat-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
-.cat-track-wrapper { padding: 20px 0; }
-.cat-track { position: relative; height: 14px; background: #eef2f5; border-radius: 7px; margin: 20px 10px; }
-#cat-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #65c3ba 0%, #abecd6 100%); border-radius: 7px; transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-/* Кот строго по центру отрезка */
-#interactive-cat {
-  position: absolute;
-  font-size: 36px;
-  top: -38px;
-  left: 0%;
-  transform: translateX(-50%);
-  transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  cursor: pointer;
-  user-select: none;
-  z-index: 10;
-}
-.jump { animation: catJump 0.4s ease-in-out; }
-@keyframes catJump {
-  0%, 100% { top: -38px; transform: translateX(-50%) scale(1); }
-  50% { top: -75px; transform: translateX(-50%) scale(1.2) rotate(-5deg); }
-}
-.fish-finish { position: absolute; right: -12px; top: -24px; font-size: 24px; }
-
-/* Кнопки */
-.cat-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
-.btn-act { background: #f0f4f8; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-.btn-act:hover { background: #e1e8f0; transform: translateY(-1px); }
-.reset-btn { background: #fff1f1; color: #ff5c5c; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-.reset-btn:hover { background: #ffe4e4; }
-
-/* Адаптивность для узких экранов */
-@media (max-width: 700px) {
-  #cat-widget-container { flex-direction: column; }
-  .cat-panel-left { border-right: none; border-bottom: 1px solid #eee; padding-right: 0; padding-bottom: 20px; }
-}
-</style>
-
-<!-- Скрипты логики и сохранения (JavaScript) -->
-<script>
-// Загрузка сохраненных данных или создание новых
-let catData = JSON.parse(localStorage.getItem('catDashboardData')) || {
-  currentScore: 0,
-  todayTasks: [
-    { text: "Выучить 5 слов на английском", done: false },
-    { text: "Написать пост в блог", done: false }
-  ]
-};
-
-// Функция сохранения в память браузера
-function saveData() {
-  localStorage.setItem('catDashboardData', JSON.stringify(catData));
-}
-
-function updateWidget() {
-  const target = parseInt(document.getElementById('target-score').value) || 10;
-  document.getElementById('max-score').innerText = target;
-  document.getElementById('current-score').innerText = catData.currentScore;
-  
-  let percentage = (catData.currentScore / target) * 100;
-  if (percentage > 100) percentage = 100;
-  if (percentage < 0) percentage = 0;
-  
-  document.getElementById('cat-progress-bar').style.width = percentage + '%';
-  document.getElementById('interactive-cat').style.left = percentage + '%';
-  
-  renderTodayTasks();
-}
-
-function addPoints(type) {
-  let points = 1;
-  if (type === 'task') points = parseInt(document.getElementById('p-task').value) || 1;
-  if (type === 'water') points = parseInt(document.getElementById('p-water').value) || 1;
-  if (type === 'habit') points = parseInt(document.getElementById('p-habit').value) || 2;
-  
-  catData.currentScore += points;
-  saveData();
-  updateWidget();
-  jumpCat();
-}
-
-function jumpCat() {
-  const cat = document.getElementById('interactive-cat');
-  cat.classList.add('jump');
-  setTimeout(() => cat.classList.remove('jump'), 400);
-}
-
-// Управление списком "Обязательно на сегодня"
-function renderTodayTasks() {
-  const listEl = document.getElementById('today-must-do-list');
-  listEl.innerHTML = '';
-  catData.todayTasks.forEach((task, index) => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <label style="text-decoration: ${task.done ? 'line-through' : 'none'}; color: ${task.done ? '#aaa' : '#333'}">
-        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTodayTask(${index})">
-        ${task.text}
-      </label>
-      <button class="todo-remove" onclick="removeTodayTask(${index})">×</button>
-    `;
-    listEl.appendChild(li);
-  });
-}
-
-function addTodayTask() {
-  const input = document.getElementById('new-today-task');
-  if (input.value.trim() !== '') {
-    catData.todayTasks.push({ text: input.value.trim(), done: false });
-    input.value = '';
-    saveData();
-    renderTodayTasks();
-  }
-}
-
-function toggleTodayTask(index) {
-  catData.todayTasks[index].done = !catData.todayTasks[index].done;
-  // Если задача отмечена как выполненная — котик получает баллы!
-  if (catData.todayTasks[index].done) {
-    addPoints('task');
-  }
-  saveData();
-  updateWidget();
-}
-
-function removeTodayTask(index) {
-  catData.todayTasks.splice(index, 1);
-  saveData();
-  renderTodayTasks();
-}
-
-function resetCat() {
-  if(confirm("Сбросить баллы и очистить обязательные задачи на сегодня?")) {
-    catData.currentScore = 0;
-    catData.todayTasks = [];
-    saveData();
-    updateWidget();
-  }
-}
-
-// Слушатель изменения цели
-document.getElementById('target-score').addEventListener('input', () => {
-  saveData();
-  updateWidget();
-});
-
-// Запуск при загрузке страницы
-window.onload = function() {
-  updateWidget();
-};
-</script>
-<!-- Конец блока Интерактивного Кота -->
 </html>
 
 
