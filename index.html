@@ -488,6 +488,203 @@ window.onload = function() {
       </div>
     </div>
   </section>
+  <!-- Блок Ютуб-Плейлиста с запоминанием номера видео -->
+<div id="yt-playlist-tracker">
+  <h3>📺 Мой видео-курс английского</h3>
+  <p class="yt-hint">Вставьте чистую ссылку на плейлист. Система запомнит, на каком видео вы остановились!</p>
+
+  <!-- Настройка ссылки на плейлист -->
+  <div class="yt-inputs">
+    <input type="text" id="yt-playlist-url" placeholder="Вставьте ссылку на плейлист (должна содержать list=...)">
+    <button onclick="savePlaylistLink()" class="yt-btn-save">💾 Сохранить плейлист</button>
+  </div>
+
+  <!-- Зона управления уроками -->
+  <div class="yt-view-zone">
+    
+    <!-- Большая кнопка запуска нужного видео -->
+    <a id="yt-playlist-play-link" href="#" target="_blank" class="yt-big-play-btn">
+      ▶ Открыть урок №<span id="yt-display-index-btn">1</span>
+    </a>
+    
+    <!-- Переключатель номеров видео -->
+    <div class="yt-controls-row">
+      <button onclick="changeVideoIndex(-1)" class="yt-nav-btn">◀ Прошлый урок</button>
+      <div class="yt-current-number">
+        Урок № <input type="number" id="yt-current-index-input" value="1" min="1" onchange="manualIndexChange()">
+      </div>
+      <button onclick="changeVideoIndex(1)" class="yt-nav-btn">Следующий урок ▶</button>
+    </div>
+
+  </div>
+
+  <div id="yt-playlist-status" class="yt-status-text"></div>
+</div>
+
+<!-- Красивые стили (CSS) -->
+<style>
+#yt-playlist-tracker {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  margin: 20px 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+#yt-playlist-tracker h3 { margin-top: 0; color: #1a202c; margin-bottom: 5px; }
+.yt-hint { font-size: 13px; color: #718096; margin-bottom: 15px; }
+.yt-inputs { display: flex; gap: 8px; margin-bottom: 20px; }
+#yt-playlist-url { flex: 1; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 13px; }
+.yt-btn-save { background: #4a5568; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.yt-btn-save:hover { background: #2d3748; }
+
+.yt-view-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #f7fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e0;
+}
+.yt-big-play-btn {
+  display: inline-block;
+  text-align: center;
+  background: #ff0000;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 14px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2);
+  transition: all 0.2s;
+  font-size: 16px;
+}
+.yt-big-play-btn:hover { background: #cc0000; transform: translateY(-1px); }
+
+/* Кнопки переключения */
+.yt-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.yt-nav-btn {
+  background: #319795;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.yt-nav-btn:hover { background: #234e52; }
+.yt-current-number {
+  font-size: 16px;
+  font-weight: bold;
+  color: #2d3748;
+}
+.yt-current-number input {
+  width: 60px;
+  padding: 5px;
+  text-align: center;
+  font-size: 16px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  margin-left: 5px;
+}
+.yt-status-text { margin-top: 12px; font-size: 12px; color: #4a5568; font-style: italic; text-align: center; }
+</style>
+
+<!-- Логика переключения и памяти (JavaScript) -->
+<script>
+// Загружаем данные из памяти браузера (храним ссылку и номер видео)
+let ytPlaylistData = JSON.parse(localStorage.getItem('userYoutubePlaylistProgress')) || {
+  playlistUrl: 'https://youtube.com...', // заглушка
+  currentIndex: 1
+};
+
+// Функция сборки ссылки с правильным номером видео (&index=)
+function buildPlaylistLink() {
+  let url = ytPlaylistData.playlistUrl;
+  
+  // Очищаем ссылку от старых индексов, если они там были вставлены случайно
+  url = url.replace(/&index=\d+/g, '');
+  url = url.replace(/&v=[^&]+/g, ''); // убираем id конкретного видео, чтобы шел запуск из плейлиста
+  
+  // Если это прямая ссылка на плейлист (содержит list=)
+  if (url.includes('list=')) {
+    // Если ссылка ведет на страницу плейлиста, превращаем её в ссылку плеера
+    if (url.includes('playlist?')) {
+      url = url.replace('playlist?', 'watch?');
+    }
+    return url + '&index=' + ytPlaylistData.currentIndex;
+  }
+  
+  return url; // Если ссылка обычная, возвращаем как есть
+}
+
+// Обновление кнопок и текстов на экране
+function updatePlaylistUI() {
+  document.getElementById('yt-playlist-url').value = ytPlaylistData.playlistUrl;
+  document.getElementById('yt-current-index-input').value = ytPlaylistData.currentIndex;
+  document.getElementById('yt-display-index-btn').innerText = ytPlaylistData.currentIndex;
+  
+  const playBtn = document.getElementById('yt-playlist-play-link');
+  playBtn.href = buildPlaylistLink();
+  
+  document.getElementById('yt-playlist-status').innerText = `⭐ В следующий раз обучение откроется с видео №${ytPlaylistData.currentIndex}`;
+}
+
+// Сохранение ссылки на весь плейлист
+function savePlaylistLink() {
+  const inputUrl = document.getElementById('yt-playlist-url').value.trim();
+  if (inputUrl !== "") {
+    ytPlaylistData.playlistUrl = inputUrl;
+    localStorage.setItem('userYoutubePlaylistProgress', JSON.stringify(ytPlaylistData));
+    updatePlaylistUI();
+    alert("Ссылка на плейлист успешно сохранена!");
+  }
+}
+
+// Изменение номера видео кнопками "Вперед" / "Назад"
+function changeVideoIndex(direction) {
+  let newIndex = parseInt(ytPlaylistData.currentIndex) + direction;
+  if (newIndex < 1) newIndex = 1; // Номер видео не может быть меньше 1
+  
+  ytPlaylistData.currentIndex = newIndex;
+  localStorage.setItem('userYoutubePlaylistProgress', JSON.stringify(ytPlaylistData));
+  updatePlaylistUI();
+  
+  // Логика поощрения: если вы переключили на «Следующий урок», котик на главной радуется!
+  if (direction > 0 && typeof catData !== 'undefined') {
+    // Берем стоимость выполнения задачи из настроек кота или даем 2 балла по умолчанию
+    let points = parseInt(document.getElementById('p-task')?.value) || 2;
+    catData.currentScore += points;
+    localStorage.setItem('catDashboardData', JSON.stringify(catData));
+    if (typeof updateWidget === 'function') updateWidget();
+  }
+}
+
+// Изменение номера вручную через ввод цифры в поле
+function manualIndexChange() {
+  let val = parseInt(document.getElementById('yt-current-index-input').value);
+  if (isNaN(val) || val < 1) val = 1;
+  
+  ytPlaylistData.currentIndex = val;
+  localStorage.setItem('userYoutubePlaylistProgress', JSON.stringify(ytPlaylistData));
+  updatePlaylistUI();
+}
+
+// Мягкий старт скрипта, чтобы не мешать остальным блокам вашей страницы
+setTimeout(() => {
+  updatePlaylistUI();
+}, 250);
+</script>
+
 
   <!-- БЛОГ -->
   <section id="blog" class="sec">
